@@ -1,5 +1,5 @@
 # Risk of Rain 2
-Rising World is a voxel based open-world sandbox game, featuring a procedurally generated world, playable in single and multi-player.
+Risk of Rain 2 is a Rougelite, thirdperson action game features tons of items and multiple characters. Playable in both singleplayer and multiplayer.
 
 ### Server Ports
 Risk of Rain 2 requires up to 3 ports.
@@ -9,3 +9,5 @@ Risk of Rain 2 requires up to 3 ports.
 | Server  |  27015  	  |
 | Query   |  27016        |
 | Steam   |  0            |
+
+(source:[steamcommunity.com](https://steamcommunity.com/sharedfiles/filedetails/?id=1938378081))
