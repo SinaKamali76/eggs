@@ -4,7 +4,7 @@
         "version": "PTDL_v1",
         "update_url": null
     },
-    "exported_at": "2021-02-05T19:28:51+03:30",
+    "exported_at": "2021-02-11T15:03:24+03:30",
     "name": "Risk of Rain 2",
     "author": "selenianranger@gmail.com",
     "description": "Escape a chaotic alien planet by fighting through hordes of frenzied monsters \u2013 with your friends, or on your own. Combine loot in surprising ways and master each character until you become the havoc you feared upon your first crash landing.",
@@ -12,16 +12,16 @@
     "images": [
         "quay.io\/parkervcp\/pterodactyl-images:debian_wine-5"
     ],
-    "startup": "xvfb-run -l wine64 \"Risk of Rain 2.exe\"",
+    "startup": "xvfb-run wine64 \"Risk of Rain 2.exe\"",
     "config": {
-        "files": "{\r\n    \"\/Risk of Rain 2_Data\/Config\/server.cfg\": {\r\n        \"parser\": \"file\",\r\n        \"find\": {\r\n            \"sv_hostname\": \"sv_hostname \\\"{{server.build.env.SV_HOSTNAME}}\\\";\",\r\n            \"sv_password\": \"sv_password \\\"{{server.build.env.SERVER_PASS}}\\\";\",\r\n            \"sv_port\": \"sv_port {{server.build.default.port}};\",\r\n            \"steam_server_query_port\": \"steam_server_query_port {{server.build.env.QUERY_PORT}};\",\r\n            \"steam_server_steam_port\": \"steam_server_steam_port {{server.build.env.STEAM_PORT}};\"\r\n        }\r\n    }\r\n}",
+        "files": "{\r\n    \"\/Risk of Rain 2_Data\/Config\/server.cfg\": {\r\n        \"parser\": \"file\",\r\n        \"find\": {\r\n            \"sv_hostname\": \"sv_hostname \\\"{{server.build.env.SV_HOSTNAME}}\\\";\",\r\n            \"sv_password\": \"sv_password \\\"{{server.build.env.SERVER_PASS}}\\\";\",\r\n            \"steam_server_heartbeat_enabled\": \"steam_server_heartbeat_enabled {{server.build.env.SV_HEARTBEAT}};\",\r\n            \"sv_port\": \"sv_port {{server.build.default.port}};\",\r\n            \"steam_server_query_port\": \"steam_server_query_port {{server.build.env.QUERY_PORT}};\",\r\n            \"steam_server_steam_port\": \"steam_server_steam_port {{server.build.env.STEAM_PORT}};\"\r\n        }\r\n    }\r\n}",
         "startup": "{\r\n    \"done\": \"Press Enter to chat.\"\r\n}",
         "logs": "{}",
         "stop": "^C"
     },
     "scripts": {
         "installation": {
-            "script": "#!\/bin\/bash\r\n# Installation Script\r\n#\r\n# Install dependencies\r\napt update\r\napt -y --no-install-recommends install curl libstdc++6 lib32gcc1 ca-certificates\r\n\r\n## download and install steamcmd\r\necho -e \"\\nInstalling SteamCMD...\\n\"\r\ncd \/tmp\r\nmkdir -p \/mnt\/server\/steamcmd\r\ncurl -sSL -o steamcmd.tar.gz https:\/\/steamcdn-a.akamaihd.net\/client\/installer\/steamcmd_linux.tar.gz\r\ntar -xzvf steamcmd.tar.gz -C \/mnt\/server\/steamcmd\r\ncd \/mnt\/server\/steamcmd\r\n\r\nchown -R root:root \/mnt\r\nexport HOME=\/mnt\/server\r\n\r\n## Install Steamworks DLLs\r\necho -e \"\\nInstalling Steamworks...\\n\"\r\nmkdir -p \/mnt\/server\/steamworks_sdk\r\n.\/steamcmd.sh +login anonymous +force_install_dir \/mnt\/server\/steamworks_sdk +@sSteamCmdForcePlatformType windows +app_update 1007 +quit\r\nfind \/mnt\/server\/steamworks_sdk -name \"*64.dll\" -exec cp {} -t \/mnt\/server \\;\r\n\r\n## Install game using steamcmd\r\necho -e \"\\nInstalling game using steamcmd...\\n\"\r\n.\/steamcmd.sh +login anonymous +@sSteamCmdForcePlatformType windows +force_install_dir \/mnt\/server +app_update ${SRCDS_APPID} ${EXTRA_FLAGS} validate +quit\r\n\r\n## set up 32 bit libraries\r\nmkdir -p \/mnt\/server\/.steam\/sdk32\r\ncp -v linux32\/steamclient.so ..\/.steam\/sdk32\/steamclient.so\r\n\r\n## set up 64 bit libraries\r\nmkdir -p \/mnt\/server\/.steam\/sdk64\r\ncp -v linux64\/steamclient.so ..\/.steam\/sdk64\/steamclient.so\r\n\r\n## make config file\r\ncat << EOT > \"\/mnt\/server\/Risk of Rain 2_Data\/Config\/server.cfg\"\r\n\/\/\r\n\/\/ Risk of Rain 2 Dedicated Server custom configuration.\r\n\/\/\r\n\r\nsv_maxplayers 4; \/\/ The maximum number of players.\r\nsteam_server_heartbeat_enabled 1; \/\/ Set to 0 to not advertise to the master server.\r\nsv_hostname \r\nsv_port \r\nsteam_server_query_port \r\nsteam_server_steam_port\r\nsv_password \r\n\r\necho \"Loaded custom server configuration.\";\r\nEOT\r\n\r\necho -e \"\\nInstall complete.\"",
+            "script": "#!\/bin\/bash\r\n# Installation Script\r\n#\r\n# Install dependencies\r\napt update\r\napt -y --no-install-recommends install curl libstdc++6 lib32gcc1 ca-certificates\r\n\r\n## download and install steamcmd\r\necho -e \"\\nInstalling SteamCMD...\\n\"\r\ncd \/tmp\r\nmkdir -p \/mnt\/server\/steamcmd\r\ncurl -sSL -o steamcmd.tar.gz https:\/\/steamcdn-a.akamaihd.net\/client\/installer\/steamcmd_linux.tar.gz\r\ntar -xzvf steamcmd.tar.gz -C \/mnt\/server\/steamcmd\r\ncd \/mnt\/server\/steamcmd\r\n\r\nchown -R root:root \/mnt\r\nexport HOME=\/mnt\/server\r\n\r\n## Install Steamworks DLLs\r\necho -e \"\\nInstalling Steamworks...\\n\"\r\nmkdir -p \/mnt\/server\/steamworks_sdk\r\n.\/steamcmd.sh +login anonymous +force_install_dir \/mnt\/server\/steamworks_sdk +@sSteamCmdForcePlatformType windows +app_update 1007 +quit\r\nfind \/mnt\/server\/steamworks_sdk -name \"*64.dll\" -exec cp {} -t \/mnt\/server \\;\r\n\r\n## Install game using steamcmd\r\necho -e \"\\nInstalling game using steamcmd...\\n\"\r\n.\/steamcmd.sh +login anonymous +@sSteamCmdForcePlatformType windows +force_install_dir \/mnt\/server +app_update ${SRCDS_APPID} ${EXTRA_FLAGS} validate +quit\r\n\r\n## set up 32 bit libraries\r\nmkdir -p \/mnt\/server\/.steam\/sdk32\r\ncp -v linux32\/steamclient.so ..\/.steam\/sdk32\/steamclient.so\r\n\r\n## set up 64 bit libraries\r\nmkdir -p \/mnt\/server\/.steam\/sdk64\r\ncp -v linux64\/steamclient.so ..\/.steam\/sdk64\/steamclient.so\r\n\r\n## make config file\r\ncat << EOT > \"\/mnt\/server\/Risk of Rain 2_Data\/Config\/server.cfg\"\r\n\/\/\r\n\/\/ Risk of Rain 2 Dedicated Server custom configuration.\r\n\/\/\r\n\r\nsv_maxplayers 4; \/\/ The maximum number of players.\r\nsteam_server_heartbeat_enabled\r\nsv_hostname \r\nsv_port \r\nsteam_server_query_port \r\nsteam_server_steam_port\r\nsv_password \r\n\r\necho \"Loaded custom server configuration.\";\r\nEOT\r\n\r\necho -e \"\\nInstall complete.\"",
             "container": "debian:buster-slim",
             "entrypoint": "bash"
         }
@@ -29,7 +29,7 @@
     "variables": [
         {
             "name": "App ID",
-            "description": "",
+            "description": "SteamID for the dedicated server",
             "env_variable": "SRCDS_APPID",
             "default_value": "1180760",
             "user_viewable": true,
@@ -38,7 +38,7 @@
         },
         {
             "name": "Server Name",
-            "description": "",
+            "description": "The name that shows up in the server browser",
             "env_variable": "SV_HOSTNAME",
             "default_value": "My Risk of Rain 2 Dedicated Server",
             "user_viewable": true,
@@ -47,7 +47,7 @@
         },
         {
             "name": "Query port",
-            "description": "",
+            "description": "The port steam uses to query server information",
             "env_variable": "QUERY_PORT",
             "default_value": "27016",
             "user_viewable": true,
@@ -65,7 +65,7 @@
         },
         {
             "name": "Server Password",
-            "description": "",
+            "description": "The password used to join the server. Leave empty to disable it.",
             "env_variable": "SERVER_PASS",
             "default_value": "",
             "user_viewable": true,
@@ -74,7 +74,7 @@
         },
         {
             "name": "Windows Install",
-            "description": "",
+            "description": "Don't change this value. (default:1)",
             "env_variable": "WINDOWS_INSTALL",
             "default_value": "1",
             "user_viewable": false,
